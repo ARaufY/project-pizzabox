@@ -7,15 +7,14 @@ using PizzaBox.Storing.Repositories;
 
 namespace PizzaBox.Client.Singletons
 {
-  /// <summary>
-  /// 
-  /// </summary>
+
   public class StoreSingleton
   {
-    private const string _path = @"store.xml";
+    private const string _path = @"data/store.xml";
     private readonly FileRepository _fr = new FileRepository();
-    private static readonly StoreSingleton _instance;
+    private static StoreSingleton _instance;
     public List<AStore> Stores { get; }
+
 
     public static StoreSingleton Instance
     {
@@ -23,7 +22,7 @@ namespace PizzaBox.Client.Singletons
       {
         if (_instance == null)
         {
-          return new StoreSingleton();
+          _instance = new StoreSingleton();
         }
 
         return _instance;
@@ -32,10 +31,15 @@ namespace PizzaBox.Client.Singletons
 
     private StoreSingleton()
     {
+
+      List<AStore> s = new List<AStore> { new NewYorkStore(), new ChicagoStore() };
+      _fr.WriteToFile<AStore>(_path, s);
       if (Stores == null)
       {
-        Stores = _fr.ReadFromFile(_path);
+
+        Stores = _fr.ReadFromFile<List<AStore>>(_path);
       }
+
 
     }
   }

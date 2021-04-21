@@ -6,7 +6,7 @@ namespace PizzaBox.Domain.Abstracts
   /// <summary>
   /// 
   /// </summary>
-  public abstract class APizza
+  public abstract class APizza : AModel
   {
     public Crust Crust { get; set; }
     public Size Size { get; set; }

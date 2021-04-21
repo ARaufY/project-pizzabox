@@ -9,28 +9,29 @@ namespace PizzaBox.Storing.Repositories
   public class FileRepository
   {
 
-    public List<AStore> ReadFromFile(string path)
+    public T ReadFromFile<T>(string path) where T : class
     {
       try
       {
         var reader = new StreamReader(path);
-        var xml = new XmlSerializer(typeof(List<AStore>));
+        var xml = new XmlSerializer(typeof(T));
 
-        return xml.Deserialize(reader) as List<AStore>;
+        var results = xml.Deserialize(reader) as T;
+        return results;
       }
-      catch
+      catch (NullReferenceException e)
       {
-
+        Console.WriteLine(e.StackTrace);
         return null;
       }
     }
 
-    public bool WriteToFile(string path, List<AStore> stores)
+    public bool WriteToFile<T>(string path, List<AStore> stores) where T : class
     {
       try
       {
         var writer = new StreamWriter(path);
-        var xml = new XmlSerializer(typeof(List<AStore>));
+        var xml = new XmlSerializer(typeof(T));
 
         xml.Serialize(writer, stores);
         return true;

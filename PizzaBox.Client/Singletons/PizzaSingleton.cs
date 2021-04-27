@@ -35,11 +35,11 @@ namespace PizzaBox.Client.Singletons
     private PizzaSingleton(PizzaBoxContext context)
     {
       _context = context;
-      if (Pizzas == null)
-      {
-        Pizzas = _context.Pizzas.ToList();
-      }
+
+      Pizzas = _context.Pizzas.ToList();
 
     }
+
+
   }
 }

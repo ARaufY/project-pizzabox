@@ -6,6 +6,7 @@ using PizzaBox.Domain.Models;
 using PizzaBox.Domain.Models.Pizzas;
 using PizzaBox.Client.Singletons;
 using PizzaBox.Storing;
+using System.Linq;
 
 namespace PizzaBox.Client
 {
@@ -41,12 +42,17 @@ namespace PizzaBox.Client
 
       order.Customer = SelectCustomer();
       order.Store = SelectStore();
-      order.Pizza = SelectPizza();
+
       //order.Pizza.Crust = SelectCrust();
       //order.Pizza.Size = SelectSize();
+      order.Pizza = SelectPizza();
 
 
       _orderSingleton.addOrder(order);
+
+      //var orders = _context.Orders.Where(o => o.Customer.Name == order.Customer.Name);
+
+      //PrintItems(orders);
     }
 
     private static void PrintOrder(APizza pizza)
@@ -55,20 +61,19 @@ namespace PizzaBox.Client
     }
 
 
-    private static void PrintPizzaList()
-    {
-      var index = 0;
-
-      foreach (var item in _pizzaSingleton.Pizzas)
-      {
-        Console.WriteLine($"{++index} - {item}");
-      }
-    }
 
     private static Size SelectSize()
     {
-      PrintSizes();
-      var input = int.Parse(Console.ReadLine());
+      var valid = int.TryParse(Console.ReadLine(), out int input);
+      if (!valid)
+      {
+        return null;
+      }
+
+      var size = _sizeSingleton.Sizes[input - 1];
+
+      PrintItems(_crustSingleton.Crusts);
+
       return _sizeSingleton.Sizes[input - 1];
 
     }
@@ -90,32 +95,20 @@ namespace PizzaBox.Client
     }
     private static Crust SelectCrust()
     {
-      PrintCrust();
-      var input = int.Parse(Console.ReadLine());
+      var valid = int.TryParse(Console.ReadLine(), out int input);
+      if (!valid)
+      {
+        return null;
+      }
+
+      var crust = _crustSingleton.Crusts[input - 1];
+
+      PrintItems(_sizeSingleton.Sizes);
+
       return _crustSingleton.Crusts[input - 1];
 
     }
 
-
-    private static void PrintStoreList()
-    {
-      var index = 0;
-
-      foreach (var item in _storeSingleton.Stores)
-      {
-        Console.WriteLine($"{++index} - {item}");
-      }
-    }
-
-    private static void PrintSizes()
-    {
-      var index = 0;
-
-      foreach (var item in _sizeSingleton.Sizes)
-      {
-        System.Console.WriteLine($"{++index} - {item}");
-      }
-    }
 
     private static void PrintItems(IEnumerable<object> items)
     {
@@ -148,10 +141,11 @@ namespace PizzaBox.Client
       }
 
       var pizza = _pizzaSingleton.Pizzas[input - 1];
+
       // System.Console.WriteLine("Select a crust:");
       // SelectCrust();
-      // System.Console.WriteLine("Select a size:");
-      // SelectSize();
+      //System.Console.WriteLine("Select a size:");
+      //SelectSize();
 
       PrintOrder(pizza);
 

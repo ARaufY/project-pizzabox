@@ -61,6 +61,10 @@ namespace PizzaBox.Storing
 
       builder.Entity<Customer>().HasKey(e => e.EntityId);
 
+      builder.Entity<AStore>().HasMany<Order>(s => s.Orders).WithOne(o => o.Store);
+      builder.Entity<Customer>().HasMany<Order>().WithOne(o => o.Customer);
+      builder.Entity<APizza>().HasMany<Order>().WithOne(o => o.Pizza);
+
       // builder.Entity<Size>().HasMany<APizza>().WithOne(); // orm is creating the has
       // builder.Entity<APizza>().HasOne<Size>().WithMany();
       builder.Entity<Size>().HasData(new Size[]
@@ -74,6 +78,7 @@ namespace PizzaBox.Storing
       SeedCustomer(builder);
       SeedToppings(builder);
       SeedStore(builder);
+      //SeedPizza(builder);
     }
 
     private void SeedToppings(ModelBuilder builder)
@@ -110,13 +115,18 @@ namespace PizzaBox.Storing
           );
     }
 
+    private void SeedPizza(ModelBuilder builder)
+    {
+      builder.Entity<APizza>().HasData(new MeatPizza() { EntityId = 1 });
+    }
+
     private void SeedStore(ModelBuilder builder)
     {
       builder.Entity<ChicagoStore>().HasData(new ChicagoStore[]
-{
+      {
         new ChicagoStore() { EntityId = 2, Name = "Chitown Main Street" },
         new ChicagoStore() { EntityId = 3, Name = "Windy City" }
-});
+      });
 
       builder.Entity<NewYorkStore>().HasData(new NewYorkStore[]
       {

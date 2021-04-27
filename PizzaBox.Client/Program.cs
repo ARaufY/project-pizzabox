@@ -89,6 +89,7 @@ namespace PizzaBox.Client
 
       var customer = _customerSingleton.Customers[input - 1];
 
+      System.Console.WriteLine("Please Select a Store: ");
       PrintItems(_storeSingleton.Stores);
 
       return customer;
@@ -102,6 +103,7 @@ namespace PizzaBox.Client
       }
 
       var crust = _crustSingleton.Crusts[input - 1];
+
 
       PrintItems(_sizeSingleton.Sizes);
 
@@ -147,6 +149,7 @@ namespace PizzaBox.Client
       //System.Console.WriteLine("Select a size:");
       //SelectSize();
 
+
       PrintOrder(pizza);
 
       return pizza;
@@ -166,6 +169,7 @@ namespace PizzaBox.Client
         return null;
       }
 
+      System.Console.WriteLine("Please select a pizza from the list:");
       PrintItems(_pizzaSingleton.Pizzas);
 
       return _storeSingleton.Stores[input - 1];

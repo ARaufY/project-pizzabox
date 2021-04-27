@@ -5,13 +5,25 @@ using PizzaBox.Domain.Models.Stores;
 using PizzaBox.Domain.Models;
 using PizzaBox.Domain.Models.Pizzas;
 using PizzaBox.Client.Singletons;
+using PizzaBox.Storing;
 
 namespace PizzaBox.Client
 {
 
   public class Program
   {
-    private static readonly StoreSingleton _storeSingleton = StoreSingleton.Instance;
+
+    private static readonly PizzaBoxContext _context = new PizzaBoxContext();
+    private static readonly StoreSingleton _storeSingleton = StoreSingleton.Instance(_context);
+    private static readonly PizzaSingleton _pizzaSingleton = PizzaSingleton.Instance(_context);
+
+    private static readonly CrustSingleton _crustSingleton = CrustSingleton.Instance(_context);
+    private static readonly SizeSingleton _sizeSingleton = SizeSingleton.Instance(_context);
+
+    private static readonly OrderSingleton _orderSingleton = OrderSingleton.Instance(_context);
+    private static readonly CustomerSingleton _customerSingleton = CustomerSingleton.Instance(_context);
+
+
 
 
     private static void Main()
@@ -25,11 +37,16 @@ namespace PizzaBox.Client
       var order = new Order();
 
       Console.WriteLine("Welcome to PizzaBox");
-      PrintStoreList();
+      PrintItems(_customerSingleton.Customers);
 
-      order.Customer = new Customer();
+      order.Customer = SelectCustomer();
       order.Store = SelectStore();
       order.Pizza = SelectPizza();
+      //order.Pizza.Crust = SelectCrust();
+      //order.Pizza.Size = SelectSize();
+
+
+      _orderSingleton.addOrder(order);
     }
 
     private static void PrintOrder(APizza pizza)
@@ -42,10 +59,41 @@ namespace PizzaBox.Client
     {
       var index = 0;
 
-      foreach (var item in PizzaSingleton.pizzas)
+      foreach (var item in _pizzaSingleton.Pizzas)
       {
         Console.WriteLine($"{++index} - {item}");
       }
+    }
+
+    private static Size SelectSize()
+    {
+      PrintSizes();
+      var input = int.Parse(Console.ReadLine());
+      return _sizeSingleton.Sizes[input - 1];
+
+    }
+
+    private static Customer SelectCustomer()
+    {
+      var valid = int.TryParse(Console.ReadLine(), out int input);
+
+      if (!valid)
+      {
+        return null;
+      }
+
+      var customer = _customerSingleton.Customers[input - 1];
+
+      PrintItems(_storeSingleton.Stores);
+
+      return customer;
+    }
+    private static Crust SelectCrust()
+    {
+      PrintCrust();
+      var input = int.Parse(Console.ReadLine());
+      return _crustSingleton.Crusts[input - 1];
+
     }
 
 
@@ -59,16 +107,57 @@ namespace PizzaBox.Client
       }
     }
 
+    private static void PrintSizes()
+    {
+      var index = 0;
+
+      foreach (var item in _sizeSingleton.Sizes)
+      {
+        System.Console.WriteLine($"{++index} - {item}");
+      }
+    }
+
+    private static void PrintItems(IEnumerable<object> items)
+    {
+      var index = 0;
+
+      foreach (var item in items)
+      {
+        Console.WriteLine($"{++index} - {item}");
+      }
+    }
+
+    private static void PrintCrust()
+    {
+      var index = 0;
+
+      foreach (var item in _crustSingleton.Crusts)
+      {
+        System.Console.WriteLine($"{++index} - {item}");
+      }
+    }
+
 
     private static APizza SelectPizza()
     {
-      var input = int.Parse(Console.ReadLine());
-      var pizza = PizzaSingleton.pizzas[input - 1];
+      var valid = int.TryParse(Console.ReadLine(), out int input);
+
+      if (!valid)
+      {
+        return null;
+      }
+
+      var pizza = _pizzaSingleton.Pizzas[input - 1];
+      // System.Console.WriteLine("Select a crust:");
+      // SelectCrust();
+      // System.Console.WriteLine("Select a size:");
+      // SelectSize();
 
       PrintOrder(pizza);
 
       return pizza;
     }
+
 
     /// <summary>
     /// 
@@ -76,9 +165,14 @@ namespace PizzaBox.Client
     /// <returns></returns>
     private static AStore SelectStore()
     {
-      var input = int.Parse(Console.ReadLine());
+      var valid = int.TryParse(Console.ReadLine(), out int input);
 
-      PrintPizzaList();
+      if (!valid)
+      {
+        return null;
+      }
+
+      PrintItems(_pizzaSingleton.Pizzas);
 
       return _storeSingleton.Stores[input - 1];
     }

@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using PizzaBox.Domain.Abstracts;
-using PizzaBox.Domain.Models.Pizzas;
+using PizzaBox.Domain.Models;
 using PizzaBox.Storing;
 using PizzaBox.Storing.Repositories;
 
@@ -10,19 +11,20 @@ namespace PizzaBox.Client.Singletons
   /// <summary>
   /// 
   /// </summary>
-  public class PizzaSingleton
+  public class SizeSingleton
   {
 
-    private static PizzaSingleton _instance;
-
     private readonly PizzaBoxContext _context;
+    private static SizeSingleton _instance;
 
-    public List<APizza> Pizzas { get; set; }
-    public static PizzaSingleton Instance(PizzaBoxContext context)
+    public List<Size> Sizes { get; }
+    public static SizeSingleton Instance(PizzaBoxContext context)
     {
+
+
       if (_instance == null)
       {
-        _instance = new PizzaSingleton(context);
+        _instance = new SizeSingleton(context);
       }
 
       return _instance;
@@ -32,14 +34,15 @@ namespace PizzaBox.Client.Singletons
     /// <summary>
     /// 
     /// </summary>
-    private PizzaSingleton(PizzaBoxContext context)
+    private SizeSingleton(PizzaBoxContext context)
     {
       _context = context;
-      if (Pizzas == null)
+      if (Sizes == null)
       {
-        Pizzas = _context.Pizzas.ToList();
+        Sizes = _context.Sizes.ToList();
       }
-
     }
+
+
   }
 }

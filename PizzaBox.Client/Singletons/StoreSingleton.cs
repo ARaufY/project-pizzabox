@@ -3,44 +3,53 @@ using System.IO;
 using System.Xml.Serialization;
 using PizzaBox.Domain.Abstracts;
 using PizzaBox.Domain.Models.Stores;
+using PizzaBox.Storing;
 using PizzaBox.Storing.Repositories;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using PizzaBox.Domain.Models;
 
 namespace PizzaBox.Client.Singletons
 {
 
   public class StoreSingleton
   {
-    private const string _path = @"data/store.xml";
-    private readonly FileRepository _fr = new FileRepository();
+
+
     private static StoreSingleton _instance;
     public List<AStore> Stores { get; }
 
+    private readonly PizzaBoxContext _context;
 
-    public static StoreSingleton Instance
+
+    public static StoreSingleton Instance(PizzaBoxContext context)
     {
-      get
-      {
-        if (_instance == null)
-        {
-          _instance = new StoreSingleton();
-        }
 
-        return _instance;
+      if (_instance == null)
+      {
+        _instance = new StoreSingleton(context);
+      }
+
+      return _instance;
+
+    }
+
+    private StoreSingleton(PizzaBoxContext context)
+    {
+      _context = context;
+      if (Stores == null)
+      {
+        Stores = _context.Stores.ToList();
       }
     }
 
-    private StoreSingleton()
+    public IEnumerable<AStore> ViewOrders(AStore store)
     {
-
-      List<AStore> s = new List<AStore> { new NewYorkStore(), new ChicagoStore() };
-      _fr.WriteToFile<AStore>(_path, s);
-      if (Stores == null)
-      {
-
-        Stores = _fr.ReadFromFile<List<AStore>>(_path);
-      }
-
-
+      var orders = _context.Stores
+                    .Include(s => s.Orders)
+                    .ThenInclude(o => o.Pizza)
+                    .Where(s => s.Name == store.Name);
+      return orders.ToList();
     }
   }
 }

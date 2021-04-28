@@ -55,8 +55,10 @@ namespace PizzaBox.Client
       else
       {
         System.Console.WriteLine("Please select a pizza from the list:");
+        var pp = new List<APizza>();
         for (int i = 0; i < 3; i++)
         {
+
           System.Console.WriteLine(_pizzaSingleton.Pizzas[i]);
         }
 
@@ -157,9 +159,6 @@ namespace PizzaBox.Client
       }
       var toppings = new List<Topping>();
 
-
-
-
       return _toppingSingleton.Toppings[input - 1];
     }
 
@@ -201,9 +200,9 @@ namespace PizzaBox.Client
       System.Console.WriteLine("Select toppings:");
       PrintItems(_toppingSingleton.Toppings);
       toppings.Add(SelectToppings());
-      System.Console.WriteLine("Add more toppings? ");
+      System.Console.WriteLine("Add more toppings? (Y/N) ");
       var stop = Console.ReadLine();
-      while (stop != "q")
+      while (stop != "n")
       {
         PrintItems(_toppingSingleton.Toppings);
         toppings.Add(SelectToppings());
@@ -213,7 +212,7 @@ namespace PizzaBox.Client
           System.Console.WriteLine("You can no longer add toppings!");
           break;
         }
-        System.Console.WriteLine("Select another topping?");
+        System.Console.WriteLine("Add another topping? (Y/N)");
         stop = Console.ReadLine();
       }
 

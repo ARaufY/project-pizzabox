@@ -17,6 +17,7 @@ namespace PizzaBox.Testing.Tests
 
       Assert.True(actual.Equals("Afa Jato"));
       Assert.True(sut.ToString().Equals(actual));
+      Assert.NotNull(actual);
 
     }
   }

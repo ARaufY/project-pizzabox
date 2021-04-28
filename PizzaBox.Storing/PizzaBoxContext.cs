@@ -21,6 +21,9 @@ namespace PizzaBox.Storing
     public DbSet<Crust> Crust { get; set; }
     public DbSet<Order> Orders { get; set; }
 
+    public DbSet<Topping> Toppings { get; set; }
+
+
     /// <summary>
     /// 
     /// </summary>
@@ -47,6 +50,7 @@ namespace PizzaBox.Storing
       builder.Entity<AStore>().HasKey(e => e.EntityId);
       builder.Entity<ChicagoStore>().HasBaseType<AStore>();
       builder.Entity<NewYorkStore>().HasBaseType<AStore>();
+
 
       builder.Entity<APizza>().HasKey(e => e.EntityId);
       builder.Entity<CustomPizza>().HasBaseType<APizza>();

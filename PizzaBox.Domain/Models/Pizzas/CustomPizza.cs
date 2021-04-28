@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using PizzaBox.Domain.Abstracts;
 
 namespace PizzaBox.Domain.Models.Pizzas
@@ -12,6 +14,8 @@ namespace PizzaBox.Domain.Models.Pizzas
       Crust = crust;
     }
 
+
+
     public override void AddSize(Size size = null)
     {
       Size = size;
@@ -19,7 +23,15 @@ namespace PizzaBox.Domain.Models.Pizzas
 
     public override void AddToppings(params Topping[] toppings)
     {
-      Toppings.AddRange(toppings);
+      Toppings = new List<Topping>()
+      {
+        new Topping(){Name = "Marinera Sauce", Price = 1.0m},
+        new Topping() { Name = "Cheese", Price = 1.9m},
+
+      };
+      //var t = new List<Topping>();
+      Toppings.AddRange(toppings.ToList());
+      //Toppings = t;
     }
 
 

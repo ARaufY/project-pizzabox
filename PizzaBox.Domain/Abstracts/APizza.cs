@@ -32,6 +32,9 @@ namespace PizzaBox.Domain.Abstracts
 
     public abstract void AddCrust(Crust crust = null);
 
+
+
+
     public abstract void AddToppings(params Topping[] toppings);
 
     public override string ToString()
@@ -44,7 +47,7 @@ namespace PizzaBox.Domain.Abstracts
         stringBuilder.Append($"{item}{separator}");
       }
 
-      return $"{Crust} - {Size} - {stringBuilder.ToString().TrimEnd(separator.ToCharArray())}";
+      return $"{Size} - {Crust} - {stringBuilder.ToString().TrimEnd(separator.ToCharArray())}";
     }
   }
 }

@@ -24,6 +24,8 @@ namespace PizzaBox.Client
     private static readonly OrderSingleton _orderSingleton = OrderSingleton.Instance(_context);
     private static readonly CustomerSingleton _customerSingleton = CustomerSingleton.Instance(_context);
 
+    private static readonly ToppingSingleton _toppingSingleton = ToppingSingleton.Instance(_context);
+
 
 
 
@@ -41,18 +43,33 @@ namespace PizzaBox.Client
       PrintItems(_customerSingleton.Customers);
 
       order.Customer = SelectCustomer();
+
       order.Store = SelectStore();
 
-      //order.Pizza.Crust = SelectCrust();
-      //order.Pizza.Size = SelectSize();
-      order.Pizza = SelectPizza();
+      System.Console.WriteLine("Custom or pre-made (1 - Custom, 2 - Premade):");
+      int choice = int.Parse(Console.ReadLine());
+      if (choice == 1)
+      {
+        order.Pizza = SelectCustomPizza();
+      }
+      else
+      {
+        System.Console.WriteLine("Please select a pizza from the list:");
+        for (int i = 0; i < 3; i++)
+        {
+          System.Console.WriteLine(_pizzaSingleton.Pizzas[i]);
+        }
+
+        order.Pizza = SelectPizza();
+      }
+
+      PrintOrder(order.Pizza);
 
 
       _orderSingleton.addOrder(order);
 
-      //var orders = _context.Orders.Where(o => o.Customer.Name == order.Customer.Name);
+      System.Console.WriteLine($"Your order total is: {order.Pizza.Size.Price + order.Pizza.Crust.Price + order.Pizza.Toppings.Sum(t => t.Price)}");
 
-      //PrintItems(orders);
     }
 
     private static void PrintOrder(APizza pizza)
@@ -72,7 +89,7 @@ namespace PizzaBox.Client
 
       var size = _sizeSingleton.Sizes[input - 1];
 
-      PrintItems(_crustSingleton.Crusts);
+
 
       return _sizeSingleton.Sizes[input - 1];
 
@@ -104,12 +121,10 @@ namespace PizzaBox.Client
 
       var crust = _crustSingleton.Crusts[input - 1];
 
-
-      PrintItems(_sizeSingleton.Sizes);
-
       return _crustSingleton.Crusts[input - 1];
 
     }
+
 
 
     private static void PrintItems(IEnumerable<object> items)
@@ -132,6 +147,21 @@ namespace PizzaBox.Client
       }
     }
 
+    private static Topping SelectToppings()
+    {
+      var valid = int.TryParse(Console.ReadLine(), out int input);
+
+      if (!valid)
+      {
+        return null;
+      }
+      var toppings = new List<Topping>();
+
+
+
+
+      return _toppingSingleton.Toppings[input - 1];
+    }
 
     private static APizza SelectPizza()
     {
@@ -141,19 +171,62 @@ namespace PizzaBox.Client
       {
         return null;
       }
+      System.Console.WriteLine("Select a size:");
+      PrintItems(_sizeSingleton.Sizes);
+      var size = SelectSize();
 
       var pizza = _pizzaSingleton.Pizzas[input - 1];
-
-      // System.Console.WriteLine("Select a crust:");
-      // SelectCrust();
-      //System.Console.WriteLine("Select a size:");
-      //SelectSize();
+      pizza.Size = size;
 
 
-      PrintOrder(pizza);
 
       return pizza;
     }
+
+    private static APizza SelectCustomPizza()
+    {
+
+      var pizza = new CustomPizza();
+
+      System.Console.WriteLine("Select a crust:");
+      PrintCrust();
+      var crust = SelectCrust();
+      System.Console.WriteLine("Select a size:");
+      PrintItems(_sizeSingleton.Sizes);
+      var size = SelectSize();
+
+      var toppingCount = 0;
+
+      var toppings = new List<Topping>();
+      System.Console.WriteLine("Select toppings:");
+      PrintItems(_toppingSingleton.Toppings);
+      toppings.Add(SelectToppings());
+      System.Console.WriteLine("Add more toppings? ");
+      var stop = Console.ReadLine();
+      while (stop != "q")
+      {
+        PrintItems(_toppingSingleton.Toppings);
+        toppings.Add(SelectToppings());
+        toppingCount++;
+        if (toppingCount == 2)
+        {
+          System.Console.WriteLine("You can no longer add toppings!");
+          break;
+        }
+        System.Console.WriteLine("Select another topping?");
+        stop = Console.ReadLine();
+      }
+
+      pizza.AddCrust(crust);
+      pizza.AddSize(size);
+      pizza.AddToppings(toppings.ToArray());
+
+
+      return pizza;
+    }
+
+
+
 
 
     /// <summary>
@@ -169,8 +242,6 @@ namespace PizzaBox.Client
         return null;
       }
 
-      System.Console.WriteLine("Please select a pizza from the list:");
-      PrintItems(_pizzaSingleton.Pizzas);
 
       return _storeSingleton.Stores[input - 1];
     }
